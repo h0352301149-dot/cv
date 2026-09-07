@@ -1,15 +1,22 @@
+/* =========================================================
+   HỆ THỐNG XỬ LÝ GIAO DIỆN & TƯƠNG TÁC PORTFOLIO HOÀN CHỈNH
+========================================================= */
+
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. QUẢN LÝ THEME & ĐA NGÔN NGỮ
-    const savedTheme = localStorage.getItem('cv_theme') || 'dark';
+    // ---------------------------------------------------------
+    // 1. QUẢN LÝ THEME (SÁNG/TỐI) & ĐA NGÔN NGỮ (VI/EN)
+    // ---------------------------------------------------------
+    const savedTheme = localStorage.getItem('cv_theme') || 'light';
     const savedLang = localStorage.getItem('cv_lang') || 'vi';
 
+    // Đặt theme ban đầu
     document.documentElement.setAttribute('data-theme', savedTheme);
-    
     const themeIcon = document.getElementById('themeIcon');
     if (themeIcon) {
         themeIcon.className = savedTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
     }
 
+    // Cập nhật nút ngôn ngữ ban đầu
     const updateLangBtn = (lang) => {
         const langText = document.getElementById('langText');
         if (langText) {
@@ -20,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateLangBtn(savedLang);
     applyLanguage(savedLang);
 
-    // Chuyển đổi Theme Sáng / Tối
+    // Bật/tắt Theme Sáng / Tối
     document.getElementById('themeToggle')?.addEventListener('click', (e) => {
         e.preventDefault();
         const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -34,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Chuyển đổi Ngôn ngữ Anh / Việt
+    // Bật/tắt Ngôn ngữ Anh / Việt
     document.getElementById('langToggle')?.addEventListener('click', (e) => {
         e.preventDefault();
         const currentLang = localStorage.getItem('cv_lang') || 'vi';
@@ -45,7 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
         applyLanguage(newLang);
     });
 
-    // 2. HIỆU ỨNG KÉO XUỐNG MỜ HIỆN DẦN (SCROLL REVEAL)
+    // ---------------------------------------------------------
+    // 2. HIỆU ỨNG CUỘN TỚI MỜ HIỆN DẦN (SCROLL REVEAL)
+    // ---------------------------------------------------------
     const revealElements = document.querySelectorAll('.scroll-reveal');
     
     const revealObserver = new IntersectionObserver((entries, observer) => {
@@ -62,11 +71,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     revealElements.forEach(el => revealObserver.observe(el));
 
+    // ---------------------------------------------------------
     // 3. TÍNH NĂNG 1-CHẠM SAO CHÉP (COPY TO CLIPBOARD)
+    // ---------------------------------------------------------
     const toast = document.getElementById('copyToast');
     let toastTimeout;
 
-    document.querySelectorAll('.copy-trigger').forEach(trigger => {
+    const copyTriggers = document.querySelectorAll('.copy-trigger, .contact-chip[data-copy]');
+
+    copyTriggers.forEach(trigger => {
         trigger.addEventListener('click', () => {
             const textToCopy = trigger.getAttribute('data-copy');
             if (!textToCopy) return;
@@ -79,12 +92,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         toast.classList.remove('show');
                     }, 2200);
                 }
+            }).catch(err => {
+                console.error('Lỗi khi sao chép: ', err);
             });
         });
     });
 
-    // 4. HIỆU ỨNG QUANG HỌC CON TRỎ & CẢM ỨNG
-    const cards = document.querySelectorAll('.glass-card');
+    // ---------------------------------------------------------
+    // 4. HIỆU ỨNG QUANG HỌC CON TRỎ & CẢM ỨNG (SPOTLIGHT)
+    // ---------------------------------------------------------
+    const cards = document.querySelectorAll('.glass-card, .project-pod');
     let isTicking = false;
 
     const setSpotlight = (card, clientX, clientY) => {
@@ -118,6 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+/* ---------------------------------------------------------
+   HÀM ÁP DỤNG DỮ LIỆU ĐA NGÔN NGỮ (I18N)
+--------------------------------------------------------- */
 function applyLanguage(lang) {
     const dict = window.translations || (typeof translations !== 'undefined' ? translations : null);
     if (!dict || !dict[lang]) return;
@@ -128,4 +148,6 @@ function applyLanguage(lang) {
             element.innerHTML = dict[lang][key];
         }
     });
+
+    document.documentElement.lang = lang;
 }
